@@ -58,7 +58,7 @@ public class DBHelper extends SQLiteOpenHelper {
         queryBuilder.append(String.format("%s text,\n",CONTACT_PHONE));
         queryBuilder.append(String.format("%s text,\n",CONTACT_STREET));
         queryBuilder.append(String.format("%s text,\n",CONTACT_EMAIL));
-        queryBuilder.append(String.format("%s text,\n",CONTACT_CITY));
+        queryBuilder.append(String.format("%s text\n",CONTACT_CITY)); // make sure there's no comma on the last attribute OR ERRORRR!!!!
         queryBuilder.append(")");
 
         // execute the query
@@ -116,9 +116,9 @@ public class DBHelper extends SQLiteOpenHelper {
         return (int)DatabaseUtils.queryNumEntries(db,TABLE_NAME); // casted to int cause function returns a long
     }
 
-    public ArrayList getAllContacts()
+    public ArrayList<String> getAllContacts()
     {
-        ArrayList contacts = new ArrayList();
+        ArrayList<String> contacts = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor  cursor = db.rawQuery(String.format("SELECT * FROM %s",TABLE_NAME),null);
 

@@ -9,8 +9,19 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+
+
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+
+    ListView obj;
+    DBHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,8 +30,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null)
+        if (actionBar != null)
             actionBar.setTitle("Address Book");
+
+        myDB = new DBHelper(this); // get my database.
+        ArrayList<String> allContacts = myDB.getAllContacts(); // get all the contacts in my database
+
+        // for each contact, display it.
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, allContacts); // the layout is pre defined by android in my sdk folder
+
+        obj = (ListView) findViewById(R.id.listView);
+        obj.setAdapter(arrayAdapter);
+        obj.setOnItemClickListener(this);
 
     }
 
@@ -44,5 +65,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        int id_To_Search = position + 1;
+        Bundle dataBundle = new Bundle();
+        dataBundle.putInt("id",id_To_Search);
+        Intent intent = new Intent(getApplicationContext(),DisplayContact.class);
+        intent.putExtras(dataBundle);
+        startActivity(intent);
     }
 }

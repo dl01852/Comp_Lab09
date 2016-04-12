@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="80dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="30dp">
+
+
+    <!-- Text Views for all the inputs <!- -->
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:paddingEnd="40dp"
+            android:id="@+id/txtViewName"
+    />
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phone"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:paddingEnd="40dp"
+            android:layout_below="@id/txtViewName"
+            android:id="@+id/txtViewPhone"
+    />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Street"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:paddingEnd="40dp"
+            android:layout_below="@id/txtViewPhone"
+            android:id="@+id/txtViewStreet"
+    />
+
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Email"
+              android:layout_marginTop="15dp"
+              android:layout_marginBottom="15dp"
+              android:paddingEnd="40dp"
+              android:layout_below="@+id/txtViewStreet"
+              android:id="@+id/txtViewEmail"
+    />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="City/\nState/Zip"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:paddingEnd="40dp"
+            android:layout_below="@id/txtViewEmail"
+            android:id="@+id/txtViewCity"
+    />
+
+    <!-- Edit Text for all the desired inputs <!- -->
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:layout_toEndOf="@+id/txtViewEmail"
+            android:layout_marginEnd="40dp"
+            android:id="@+id/editTxtName"
+    />
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:layout_toEndOf="@id/txtViewEmail"
+            android:layout_below="@+id/editTxtName"
+            android:layout_marginEnd="40dp"
+            android:id="@+id/editTxtPhone"
+    />
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_toEndOf="@id/txtViewEmail"
+            android:layout_below="@id/editTxtPhone"
+            android:layout_marginEnd="40dp"
+            android:id="@+id/editTxtStreet"
+    />
+
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:layout_toEndOf="@id/txtViewEmail"
+            android:layout_below="@id/editTxtStreet"
+            android:layout_marginEnd="40dp"
+            android:layout_marginTop="9dp"
+            android:id="@+id/editTxtEmail"
+    />
+    <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_toEndOf="@+id/txtViewEmail"
+            android:layout_below="@id/editTxtEmail"
+            android:layout_marginEnd="40dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/editTxtCity"
+    />
+
+    <!-- Button to Save Contact to the Database <!- -->
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SAVE CONTACT"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/editTxtCity"
+            android:layout_marginTop="16dp"
+    />
+</RelativeLayout>

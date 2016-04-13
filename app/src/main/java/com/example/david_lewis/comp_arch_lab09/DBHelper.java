@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.design.widget.TabLayout;
 import android.util.StringBuilderPrinter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class DBHelper extends SQLiteOpenHelper {
 
-    //Define all the variables needed for a database!  Database Name, Table Name, Column Names(Attributes for the table)
+    //Define all the variables needed for a database!  myDb Name, Table Name, Column Names(Attributes for the table)
 
     public static final String DATABASE_NAME = "MyDBName.db";
     public static final String TABLE_NAME = "contacts";
@@ -27,6 +28,15 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CONTACT_STREET = "street";
     public static final String CONTACT_EMAIL = "email";
     public static final String CONTACT_CITY = "city";
+
+
+    // These values will hold the data coming from the database to update Contact Object
+    private int id;
+    private String name;
+    private String phone;
+    private String street;
+    private String email;
+    private String city;
 
     public DBHelper(Context context)
     {
@@ -72,42 +82,68 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertContact(String name, String phone, String street, String email, String city)
+    public boolean insertContact(Contact contact)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues(); // this is needed to insert/update a row.
 
-        contentValues.put(CONTACT_NAME,name);
-        contentValues.put(CONTACT_PHONE,phone);
-        contentValues.put(CONTACT_STREET,street);
-        contentValues.put(CONTACT_EMAIL,email);
-        contentValues.put(CONTACT_CITY,city);
+        contentValues.put(CONTACT_NAME,contact.getName());
+        contentValues.put(CONTACT_PHONE,contact.getPhone());
+        contentValues.put(CONTACT_STREET,contact.getStreet());
+        contentValues.put(CONTACT_EMAIL,contact.getEmail());
+        contentValues.put(CONTACT_CITY,contact.getCity());
 
         db.insert(TABLE_NAME,null,contentValues);
+        db.close();
         return true;
     }
-    public boolean updateContact(Integer id, String name, String phone, String street, String email, String city)
+    public boolean updateContact(Contact contact)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(CONTACT_NAME,name);
-        contentValues.put(CONTACT_PHONE,phone);
-        contentValues.put(CONTACT_STREET,street);
-        contentValues.put(CONTACT_EMAIL,email);
-        contentValues.put(CONTACT_CITY,city);
+        contentValues.put(CONTACT_NAME,contact.getName());
+        contentValues.put(CONTACT_PHONE,contact.getPhone());
+        contentValues.put(CONTACT_STREET,contact.getStreet());
+        contentValues.put(CONTACT_EMAIL,contact.getEmail());
+        contentValues.put(CONTACT_CITY,contact.getCity());
 
-        db.update(TABLE_NAME,contentValues, "id = ? ",new String[]{Integer.toString(id)}); // Update contentVales WHERE id = id;
+        db.update(TABLE_NAME,contentValues, "id = ? ",new String[]{Integer.toString(contact.getId())}); // Update contentVales WHERE id = id;
+        db.close();
         return true;
     }
 
-    public Cursor getContact(int id)
+    public Contact getContact(int id)
     {
+        Contact contact; // Contact to be returned.
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursorData = db.rawQuery(String.format("SELECT * FROM %s WHERE id="+id+"",TABLE_NAME),null);
+        Cursor cursorData = db.rawQuery("SELECT * FROM contacts WHERE id= ?",new String[]{String.valueOf(id)});
 
-        cursorData.close();
-        return cursorData;
+        if(cursorData.moveToFirst()) // <<< MAKE SURE YOU HAVE THAT OR YOU'LL GET CURSOR OUT OF BOUNDS ERROR!!(TRUST ME I KNOW!)
+        {
+            // Get all the necessary data from the database about a particular contact
+            this.id = cursorData.getInt(cursorData.getColumnIndex(CONTACT_ID));
+            name = cursorData.getString(cursorData.getColumnIndex(CONTACT_NAME));
+            phone = cursorData.getString(cursorData.getColumnIndex(CONTACT_PHONE));
+            street = cursorData.getString(cursorData.getColumnIndex(CONTACT_STREET));
+            email = cursorData.getString(cursorData.getColumnIndex(CONTACT_EMAIL));
+            city = cursorData.getString(cursorData.getColumnIndex(CONTACT_CITY));
+            cursorData.close(); // Read somewhere that you're suppose to do this.. Not sure
+
+
+            // Give the data to the contact object and return it.
+            contact = new Contact(this.id, name, phone, street, email, city);
+            db.close();
+            return contact;
+        }
+        else
+        {
+            //ERROR!!
+            return null;
+        }
+
+
+
     }
 
     public int totalRows()
@@ -116,28 +152,52 @@ public class DBHelper extends SQLiteOpenHelper {
         return (int)DatabaseUtils.queryNumEntries(db,TABLE_NAME); // casted to int cause function returns a long
     }
 
-    public ArrayList<String> getAllContacts()
+    public ArrayList<Contact> getAllContacts()
     {
-        ArrayList<String> contacts = new ArrayList<>();
+        ArrayList<Contact> contacts = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor  cursor = db.rawQuery(String.format("SELECT * FROM %s",TABLE_NAME),null);
+        Cursor  cursorData = db.rawQuery(String.format("SELECT * FROM %s",TABLE_NAME),null);
+        Contact tempContact; // this contact will be used to iterate over all Contacts and added to list
 
-        if(cursor.moveToFirst())
+        if(cursorData.moveToFirst())
         {
             do
             {
-                contacts.add(cursor.getString(cursor.getColumnIndex(CONTACT_NAME)));
+                // Grab Data from database about a particular contact
+                this.id = cursorData.getInt(cursorData.getColumnIndex(CONTACT_ID));
+                name = cursorData.getString(cursorData.getColumnIndex(CONTACT_NAME));
+                phone = cursorData.getString(cursorData.getColumnIndex(CONTACT_PHONE));
+                street = cursorData.getString(cursorData.getColumnIndex(CONTACT_STREET));
+                email = cursorData.getString(cursorData.getColumnIndex(CONTACT_EMAIL));
+                city = cursorData.getString(cursorData.getColumnIndex(CONTACT_CITY));
+
+                tempContact = new Contact(this.id,name,phone,street,email,city);
+                contacts.add(tempContact);
             }
-            while(cursor.moveToNext());
+            while(cursorData.moveToNext());
         }
-        cursor.close();
+        cursorData.close();
+        db.close();
         return contacts;
     }
 
-    public Integer deleteContact(Integer id)
+    public Integer deleteContact(Contact contact)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "id = ?", new String[]{Integer.toString(id)});
+        return db.delete(TABLE_NAME, "id = ?", new String[]{Integer.toString(contact.getId())});
+
+    }
+
+    public void deleteAllContacts()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM %s",TABLE_NAME),null);
+
+        while(cursor.moveToNext())
+        {
+            db.delete(TABLE_NAME,"id = ?", new String[]{Integer.toString(cursor.getInt(cursor.getColumnIndex(CONTACT_ID)))});
+        }
+        db.close();
     }
 
 
